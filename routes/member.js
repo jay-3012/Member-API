@@ -72,13 +72,13 @@ router.route("/data").get(async(req,res)=>{
 
 //Visitor for Member
 router.route("/visitors").get(async(req,res)=>{
-    const{wing,flatNo}=req.params
+    const{wing,flatNo,permission}=req.params
     try{
         let result=await pool.request.input('wing',mssql.Char,wing)
                                      .input('flatNo',mssql.VarChar,flatNo)
                                      .query('select * from demoVisitor where wing=@wing and flatNo=@flatNo')
 
-        let ans = 
+
         res.status(201).json({result:result.recordset})
     }catch(err){
         res.status(500).json({msg:err})
