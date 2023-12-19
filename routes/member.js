@@ -93,7 +93,7 @@ router.route("/visitors").get(async (req, res) => {
 
 router.route("/ledger").get(async (req, res) => {
     try {
-        let result = await pool.request().query('select DocDate,DueDay from Sales ')
+        let result = await pool.request().query('select DocDate,BillAmt,NetAmt,DueDate from Sales ')
         const visitors = result.recordset.map(row => {
             return {
                 DocDate: row.DocDate,
