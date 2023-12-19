@@ -97,8 +97,9 @@ router.route("/ledger").get(async (req, res) => {
         const visitors = result.recordset.map(row => {
             return {
                 DocDate: row.DocDate,
-                FlatNumber: row.FlatNumber,
-                DueDay:row.DueDay
+                BillAmt: row.BillAmt,
+                NetAmt:row.NetAmt,
+                DueDate:row.DueDate
 
             };
         });
