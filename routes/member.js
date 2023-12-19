@@ -27,13 +27,13 @@ cons()
 
 //Login 
 router.route("/login").post(async (req, res) => {
-    const { username, password,year } = req.body
+    const { username, password, year } = req.body
     try {
 
         let result = await pool.request().input('username', mssql.NVarChar, username)
-                                         .input('password', mssql.NVarChar, password)
-                                         .input('year', mssql.NVarChar, year)
-                                         .query('select * from Users where username=@username and password=@password and year=@year')
+            .input('password', mssql.NVarChar, password)
+            .input('year', mssql.NVarChar, year)
+            .query('select * from Users where username=@username and password=@password and year=@year')
         return res.status(200).json("Login Successful")
 
     } catch (err) {
@@ -45,10 +45,17 @@ router.route("/login").post(async (req, res) => {
 
 //Register
 router.route("/register").post(async (req, res) => {
-    const { username, password,year,wing ,flatNo} = req.body
+    const { firstName, lastName, wing, flatNo, mobileNo, emailId, password } = req.body
     try {
         var request = new mssql.Request()
-        request.input('username', mssql.NVarChar, username).input('password', mssql.NVarChar, password).input('year', mssql.NVarChar, year).input('wing', mssql.NVarChar, wing).input('flatNo', mssql.NVarChar, flatNo).query('insert into Users (username,password,year,wing,flatNo)values(@username,@password,@year,@wing,@flatNo)')
+        request.input('firstName', mssql.NVarChar, firstName)
+               .input('lastName', mssql.NVarChar, lastName)
+               .input('emailId', mssql.NVarChar, emailId)
+               .input('wing', mssql.NVarChar, wing)
+               .input('flatNo', mssql.NVarChar, flatNo)
+               .input('mobileNo', mssql.NVarChar, mobileNo)
+               .input('password', mssql.NVarChar, password)
+               .query('insert into Users (firstName,lastName,emailId,password,mobileNo,wing,flatNo)values(@firstName,@lastName,@emailId,@password,@mobileNo,@wing,@flatNo)')
         res.status(201).json({ msg: 'User registered successfully' });
     } catch (err) {
         res.status(500).json({ msg: err })
@@ -57,33 +64,52 @@ router.route("/register").post(async (req, res) => {
 
 
 //Get Data
-router.route("/data").get(async(req,res)=>{
-    const{wing,flatNo}=req.params
-    try{
-        let result = await pool.request.input('wing',mssql.Char,wing)
-                                       .input('flatNo',mssql.VarChar,flatNo)
-                                       .query('select * from Users where wing=@wing and flatNo=@flatNo')
-        res.status(201).json({result:result.recordset})
-    }catch(err){
-        res.status(500).json({msg:err})
+router.route("/data").get(async (req, res) => {
+    const { wing, flatNo } = req.body
+    try {
+        let result = await pool.request.input('wing', mssql.Char, wing)
+            .input('flatNo', mssql.VarChar, flatNo)
+            .query('select * from Users where wing=@wing and flatNo=@flatNo')
+        res.status(201).json({ result: result.recordset })
+    } catch (err) {
+        res.status(500).json({ msg: err })
     }
 })
 
 
 //Visitor for Member
-router.route("/visitors").get(async(req,res)=>{
-    const{wing,flatNo,permission}=req.params
-    try{
-        let result=await pool.request.input('wing',mssql.Char,wing)
-                                     .input('flatNo',mssql.VarChar,flatNo)
-                                     .query('select * from demoVisitor where wing=@wing and flatNo=@flatNo')
+router.route("/visitors").get(async (req, res) => {
+    const { wing, flatNo } = req.body
+    try {
+        let result = await pool.request.input('wing', mssql.Char, wing)
+            .input('flatNo', mssql.VarChar, flatNo)
+            .query('select * from demoVisitor where wing=@wing and flatNo=@flatNo')
+        res.status(201).json({ result: result })
+    } catch (err) {
+        res.status(500).json({ msg: "err" })
+    }
 
+})
 
-        res.status(201).json({result:result.recordset})
-    }catch(err){
-        res.status(500).json({msg:err})
+router.route("/ledger").get(async (req, res) => {
+    try {
+        let result = await pool.request().query('select DocDate,   ,DueDay from Sales ')
+        const visitors = result.recordset.map(row => {
+            return {
+                DocDate: row.DocDate,
+                FlatNumber: row.FlatNumber,
+                DueDay:row.DueDay
+
+            };
+        });
+        res.status(201).json({ result: visitors });
+    } catch (err) {
+        res.status(500).json({ msg: err })
     }
 
 })
 
 module.exports = router
+
+// Server Started
+// Connection done
