@@ -25,6 +25,9 @@ async function cons() {
 
 cons()
 
+
+var member;
+
 //Login 
 router.route("/login").post(async (req, res) => {
     const { username, password, year } = req.body
@@ -56,7 +59,17 @@ router.route("/register").post(async (req, res) => {
                .input('mobileNo', mssql.NVarChar, mobileNo)
                .input('password', mssql.NVarChar, password)
                .query('insert into Users (firstName,lastName,emailId,password,mobileNo,wing,flatNo)values(@firstName,@lastName,@emailId,@password,@mobileNo,@wing,@flatNo)')
-        res.status(201).json({ msg: 'User registered successfully' });
+            member={
+                "firstName":firstName,
+                "lastName":lastName,
+                "emailId":emailId,
+                "wing":wing,
+                "flatNo":flatNo,
+                "mobileNo":mobileNo,
+                "password":password
+            }
+               res.status(201).json({ msg: 'User registered successfully' });  
+        
     } catch (err) {
         res.status(500).json({ msg: err })
     }
@@ -93,22 +106,15 @@ router.route("/visitors").get(async (req, res) => {
 
 router.route("/ledger").get(async (req, res) => {
     try {
-        let result = await pool.request().query('select DocDate,BillAmt,NetAmt,DueDate from Sales ')
-        const visitors = result.recordset.map(row => {
-            return {
-                DocDate: row.DocDate,
-                BillAmt: row.BillAmt,
-                NetAmt:row.NetAmt,
-                DueDate:row.DueDate
-
-            };
-        });
+        let result = await pool.request().execute('usp_Ledger_Select')
+        const visitors = result.recordset
         res.status(201).json({ result: visitors });
     } catch (err) {
         res.status(500).json({ msg: err })
     }
 
 })
+
 
 module.exports = router
 
