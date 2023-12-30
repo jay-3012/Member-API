@@ -104,14 +104,15 @@ router.route("/visitors").get(async (req, res) => {
 
 })
 
+
 router.route("/ledger").get(async (req, res) => {
     try {
-        let result = await pool.request().execute('usp_Ledger_Select')
-        const visitors = result.recordset
+        let result = await pool.request().query('select * from ledger')
+        const visitors = result
         res.status(201).json({ result: visitors });
     } catch (err) {
         res.status(500).json({ msg: err })
-    }
+    }        
 
 })
 
