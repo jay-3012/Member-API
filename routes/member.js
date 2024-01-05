@@ -107,9 +107,16 @@ router.route("/visitors").get(async (req, res) => {
 
 router.route("/ledger").get(async (req, res) => {
     try {
-        let result = await pool.request().query('select * from ledger')
-        const visitors = result
-        res.status(201).json({ result: visitors });
+        let result = await pool.request().query('select Debit,Credit,BillNumber,DocDate from ledger where Code=000100039')
+        const ledger = result.recordset.map(row => {
+            return {
+                DocDate: row.DocDate,
+                BillNumber: row.BillNumber,
+                Debit: row.Debit,
+                Credit: row.Credit,
+            };
+          });
+        res.status(201).json({ result: ledger });
     } catch (err) {
         res.status(500).json({ msg: err })
     }        
