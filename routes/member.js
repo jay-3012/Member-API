@@ -110,10 +110,10 @@ router.route("/ledger").get(async (req, res) => {
         let result = await pool.request().query('select Debit,Credit,BillNumber,DocDate from ledger where Code=000100039')
         const ledger = result.recordset.map(row => {
             return {
-                DocDate: row.DocDate,
-                BillNumber: row.BillNumber,
-                Debit: row.Debit,
-                Credit: row.Credit,
+                DocDate: String(row.DocDate),
+                BillNumber: String(row.BillNumber),
+                Debit: String(row.Debit),
+                Credit: String(row.Credit),
             };
           });
         res.status(201).json({ result: ledger });
